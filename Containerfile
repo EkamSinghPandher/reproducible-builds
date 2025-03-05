@@ -1,6 +1,6 @@
 # Build stage using specific images from stagex
 FROM scratch AS build
-COPY --from=stagex/go@sha256:6bb49db5a2d23cddcd9327933a4fcb6136882e72ec2be35730c06b1a420d7b17 . /
+COPY --from=stagex/pallet-go@sha256:da4d8eec91b2f34bb5cf4946f64fd46c4d914691435fa83dc6d777993e50de62 . /
 COPY --from=stagex/gcc:13.1.0@sha256:439bf36289ef036a934129d69dd6b4c196427e4f8e28bc1a3de5b9aab6e062f0 . /
 COPY --from=stagex/binutils:2.43.1@sha256:30a1bd110273894fe91c3a4a2103894f53eaac43cf12a035008a6982cb0e6908 . /
 COPY --from=stagex/libunwind:1.7.2@sha256:97ee6068a8e8c9f1c74409f80681069c8051abb31f9559dedf0d0d562d3bfc82 . /
@@ -23,7 +23,7 @@ COPY main.go /app/
 COPY . /app/
 
 # Build the Go application with static linking
-RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags='-extldflags "-static" -s -w' -o /hello main.go
+RUN --network=none CGO_ENABLED=0 GOOS=linux go build -a -ldflags='-extldflags "-static" -s -w' -o /hello main.go
 
 # Runtime stage - minimal scratch image
 FROM scratch
